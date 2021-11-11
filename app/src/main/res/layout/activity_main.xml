@@ -8,74 +8,69 @@
 
     <Button
         android:id="@+id/btn_camera"
-        android:layout_width="140dp"
-        android:layout_height="60dp"
+        android:layout_width="190dp"
+        android:layout_height="300dp"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="60dp"
-        android:backgroundTint="#03A9F4"
-        android:text="CAMERA"
-        android:textSize="12sp"
-        app:icon="@android:drawable/ic_menu_camera"
-        app:iconTint="#F8F3F3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn_select"
-        app:layout_constraintTop_toBottomOf="@+id/btn_predict" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="180dp"
-        android:layout_height="360dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="5dp"
+        android:backgroundTint="@color/purple_700"
+        android:fontFamily="@font/nanumsquareroundeb"
+        android:text="@string/txt_shoot"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="60sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.164"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <Button
-
-        android:id="@+id/btn_select"
-        android:layout_width="140dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        android:backgroundTint="#03A9F4"
-        android:text="SELECT"
-        android:textSize="12sp"
-        app:icon="@android:drawable/ic_menu_gallery"
-        app:iconTint="#F4EFEF"
-        app:layout_constraintEnd_toStartOf="@+id/btn_camera"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_predict" />
+        app:layout_constraintTop_toBottomOf="@id/tv_result" />
 
     <Button
         android:id="@+id/btn_predict"
-        android:layout_width="285dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="#03A9F4"
-        android:text="predict"
+        android:layout_width="190dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:backgroundTint="@color/purple_700"
+        android:fontFamily="@font/nanumsquareroundeb"
+        android:text="@string/txt_predict"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="60sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.487"
+        app:layout_constraintTop_toBottomOf="@id/tv_result" />
+
+    <ImageView
+        android:id="@+id/imageView"
+<<<<<<< Updated upstream
+        android:layout_width="180dp"
+        android:layout_height="360dp"
+=======
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:contentDescription="@string/todo"
+>>>>>>> Stashed changes
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_result" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.1"
+        tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/tv_result"
-        android:layout_width="263dp"
-        android:layout_height="124dp"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="19dp"
-        android:layout_marginEnd="60dp"
-        android:layout_marginBottom="5dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:fontFamily="@font/nanumsquareroundeb"
+        android:text="음료 이름:\n음료 종류:\n음료 맛:\n주의 사항:"
         android:textAlignment="center"
-        android:textSize="22sp"
-        app:layout_constraintBottom_toTopOf="@+id/btn_predict"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@color/black"
+        android:textSize="33sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.476"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@id/imageView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

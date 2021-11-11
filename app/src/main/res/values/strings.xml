@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Drinks_Classification</string>
+    <string name="txt_predict">음료 예측</string>ring>
+    <string name="txt_choose">갤러리</string>
+    <string name="txt_shoot">촬영</string>
+    <string name="todo">TODO</string>
 </resources>
