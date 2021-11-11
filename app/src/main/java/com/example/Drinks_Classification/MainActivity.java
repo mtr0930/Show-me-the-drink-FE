@@ -68,19 +68,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, STORAGE_PERMISSION_CODE);
 
         imgView = (ImageView) findViewById(R.id.imageView);
-        select = (Button) findViewById(R.id.btn_select);
         predict = (Button) findViewById(R.id.btn_predict);
         tv = (TextView) findViewById(R.id.tv_result);
         camera = (Button) findViewById(R.id.btn_camera);
 
-
-        // select 버튼 클릭시 동작.
-        select.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                imageChooser();
-            }
-        });
         // camera 버튼 클릭시 동작.
         camera.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -89,27 +80,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 startActivityForResult(intent, SET_IMAGE_VIEW_CODE);
             }
         });
-        // predict 버튼 클릭시 동작.
-        predict.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-
-                if(photoURI!=null){
-                    uploadFile(photoURI);
-                    speak();
-                }
-
-            }
-        });
-
-
-
 
     }// Oncreate끝.
-
-
-
-
 
     // 권한 요청 함수
     public void checkPermission(String permission, int requestCode){
@@ -159,6 +131,16 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        // 지은 --- 텍스트 뷰 초기화
+        // 새로운 이미지를 불러왔을 경우 이전 출력 상태 제거
+        // 주의 사항 아래에 줄바꿈이 생길 경우 버튼도 아래로 밀리게 됨
+        tv.setText("음료 이름 : " + "\n" +
+                "음료 종류 : " + "\n" +
+                "음료 맛 : " + "\n" +
+                "주의 사항 : "
+        );
+
         if (resultCode == RESULT_OK) {
             if (requestCode == SELECT_PICTURE) {
                 imgView.setImageURI(data.getData());
@@ -234,10 +216,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 String drink_type = response.body().getType();
                 String drink_flavor = response.body().getFlavor();
                 String drink_cautions = response.body().getCautions();
-                tv.setText("음료수 이름 : " + drink_name + "\n" +
-                                "음료수 종류 : " + drink_type + "\n" +
-                                "음료수 맛 : " + drink_flavor + "\n" +
-                                "주의사항 : " + drink_cautions + "\n"
+                tv.setText("음료 이름 : " + drink_name + "\n" +
+                                "음료 종류 : " + drink_type + "\n" +
+                                "음료 맛 : " + drink_flavor + "\n" +
+                                "주의 사항 : " + drink_cautions
                 );
                 System.out.println("성공!!!!");
                 System.out.println(drink_name);
