@@ -1,6 +1,8 @@
 package com.example.Drinks_Classification;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -20,8 +22,13 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Rational;
+import android.view.Display;
+import android.view.OrientationEventListener;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -34,6 +41,8 @@ import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
+import androidx.camera.core.UseCaseGroup;
+import androidx.camera.core.ViewPort;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
@@ -123,6 +132,7 @@ public class CustomActivity extends AppCompatActivity implements SurfaceHolder.C
      *
      * Binding to camera
      */
+    @SuppressLint("UnsafeExperimentalUsageError")
     private void bindPreview(ProcessCameraProvider cameraProvider) {
         Preview preview = new Preview.Builder()
                 .build();
@@ -132,12 +142,11 @@ public class CustomActivity extends AppCompatActivity implements SurfaceHolder.C
                 .build();
         ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
                 .build();
-
         ImageCapture.Builder builder = new ImageCapture.Builder();
-
         final ImageCapture imageCapture = builder
                 .setTargetRotation(this.getWindowManager().getDefaultDisplay().getRotation())
                 .build();
+
 
         preview.setSurfaceProvider(mCameraView.createSurfaceProvider());
         Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner)this, cameraSelector, preview, imageAnalysis, imageCapture);
@@ -176,34 +185,34 @@ public class CustomActivity extends AppCompatActivity implements SurfaceHolder.C
                                     e.printStackTrace();
                                 }
                                 if(imageBitmap!=null){
-//                                    Log.d("성공", Integer.toString(imageBitmap.getWidth()));
-//                                    Log.d("성공", Integer.toString(imageBitmap.getHeight()));
-//                                    Log.d("성공", Integer.toString(boxWidth));
-//                                    Log.d("성공", Integer.toString(boxHeight));
+                                    // camera width 1080
+                                    // camera height 2015
+                                    // box width 512
+                                    // box height 1026
+                                    // image width 3024
+                                    // image height 4032
+                                    // left 좌표 284, top 494
+
                                     String image_path = getPathFromUri(outputImage);
                                     int image_degree = readPictureDegree(image_path);
-                                    Log.d("성공", Integer.toString(image_degree));
                                     float Bitmap_size = imageBitmap.getWidth() * imageBitmap.getHeight();
                                     Matrix rotationMatrix = new Matrix();
                                     rotationMatrix.postRotate(0);
-                                    float xscale = 1280/1000F;
-                                    int left = (int) xscale*(imageBitmap.getWidth()-400)/2;
-                                    int top = (int) xscale*(imageBitmap.getHeight()-616)/2;
-                                    int width = (int) xscale*400;
-                                    int height = (int) xscale*616;
-
-                                    Bitmap bitmap = Bitmap.createBitmap(imageBitmap, left, top, width, height, rotationMatrix, false);
+                                    int scaled_width = (int) (2.0 * boxWidth);
+                                    int scaled_height = (int) (2.0 * boxHeight);
+                                    int x1 = (int) ((imageBitmap.getWidth() - scaled_width)/2) ;
+                                    int y1 = (int)((imageBitmap.getHeight() - scaled_height)/2);
+                                    int width = (int)(2.0 * boxWidth);
+                                    int height = (int) (2.0 * boxHeight);
+                                    Bitmap bitmap = Bitmap.createBitmap(imageBitmap, x1, y1, width, height, rotationMatrix, false);
                                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                                    float scale = (float) (1080/(float)bitmap.getWidth());
-                                    int image_w = (int) (bitmap.getWidth() * scale);
-                                    int image_h = (int) (bitmap.getHeight() * scale);
-                                    Bitmap resize = Bitmap.createScaledBitmap(bitmap, image_w, image_h, true);
+
+                                    Bitmap resize = Bitmap.createScaledBitmap(bitmap, 180, 360, true);
                                     resize.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                                     byte[] byteArray = stream.toByteArray();
 
                                     intent.putExtra("img", byteArray);
                                     setResult(RESULT_OK, intent);
-                                    Log.d("성공", "image 출력 성공!!!!");
                                     finish();
                                 }else{
                                     Log.d("실패", "image null");
@@ -245,6 +254,8 @@ public class CustomActivity extends AppCompatActivity implements SurfaceHolder.C
         holder.setFormat(PixelFormat.TRANSPARENT);
         holder.addCallback(this);
         // Live detection and tracking
+        ImageCapture imageCapture = new ImageCapture.Builder().build();
+
 
     }
     public String getBatchDirectoryName() {
