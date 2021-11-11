@@ -33,7 +33,8 @@
         </activity>
         <activity android:name=".CustomActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:hardwareAccelerated="true">
 
         </activity>
         <provider

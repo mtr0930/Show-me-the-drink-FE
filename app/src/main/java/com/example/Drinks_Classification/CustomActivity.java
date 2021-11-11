@@ -6,15 +6,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BlendMode;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ImageDecoder;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.graphics.PorterDuff;
+import android.graphics.RectF;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -28,12 +33,14 @@ import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
@@ -45,6 +52,7 @@ import androidx.camera.core.UseCaseGroup;
 import androidx.camera.core.ViewPort;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 
@@ -60,10 +68,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static android.graphics.BlendMode.SRC_OVER;
+import static android.graphics.PorterDuff.Mode.DST;
+import static android.graphics.PorterDuff.Mode.DST_OVER;
+
 public class CustomActivity extends AppCompatActivity implements SurfaceHolder.Callback{
     PreviewView mCameraView;
     SurfaceHolder holder;
     SurfaceView surfaceView;
+    ConstraintLayout rootLayout;
     ImageView imageView;
     Canvas canvas;
     String filePath;
@@ -192,18 +205,34 @@ public class CustomActivity extends AppCompatActivity implements SurfaceHolder.C
                                     // image width 3024
                                     // image height 4032
                                     // left 좌표 284, top 494
+                                    int imageWidth = imageBitmap.getWidth();
+                                    int imageHeight = imageBitmap.getHeight();
 
                                     String image_path = getPathFromUri(outputImage);
                                     int image_degree = readPictureDegree(image_path);
                                     float Bitmap_size = imageBitmap.getWidth() * imageBitmap.getHeight();
                                     Matrix rotationMatrix = new Matrix();
                                     rotationMatrix.postRotate(0);
-                                    int scaled_width = (int) (2.0 * boxWidth);
-                                    int scaled_height = (int) (2.0 * boxHeight);
+                                    float x_scale = 1.0f;
+                                    float y_scale = 1.0f;
+                                    if(imageWidth > cameraWidth){
+                                        x_scale = (float) (imageWidth / cameraWidth);
+                                    }
+
+                                    if(imageHeight > cameraHeight){
+                                        y_scale = (float) (imageHeight / cameraHeight);
+                                    }
+
+//                                    int scaled_width = (int) (2.0 * boxWidth);
+//                                    int scaled_height = (int) (2.0 * boxHeight);
+                                    int scaled_width = (int) (x_scale * boxWidth);
+                                    int scaled_height = (int) (y_scale * boxHeight);
                                     int x1 = (int) ((imageBitmap.getWidth() - scaled_width)/2) ;
                                     int y1 = (int)((imageBitmap.getHeight() - scaled_height)/2);
-                                    int width = (int)(2.0 * boxWidth);
-                                    int height = (int) (2.0 * boxHeight);
+//                                    int width = (int)(2.0 * boxWidth);
+//                                    int height = (int) (2.0 * boxHeight);
+                                    int width = (int)(x_scale * boxWidth);
+                                    int height = (int) (y_scale * boxHeight);
                                     Bitmap bitmap = Bitmap.createBitmap(imageBitmap, x1, y1, width, height, rotationMatrix, false);
                                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
@@ -242,7 +271,6 @@ public class CustomActivity extends AppCompatActivity implements SurfaceHolder.C
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera_layout);
-
         //Start Camera
         startCamera();
         btn_custom_camera = findViewById(R.id.btn_custom_camera);
@@ -255,6 +283,7 @@ public class CustomActivity extends AppCompatActivity implements SurfaceHolder.C
         holder.addCallback(this);
         // Live detection and tracking
         ImageCapture imageCapture = new ImageCapture.Builder().build();
+
 
 
     }
@@ -290,6 +319,7 @@ public class CustomActivity extends AppCompatActivity implements SurfaceHolder.C
      *
      * For drawing the rectangular box
      */
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     private void DrawFocusRect(int color) {
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
@@ -330,9 +360,23 @@ public class CustomActivity extends AppCompatActivity implements SurfaceHolder.C
         yOffset = top;
         boxHeight = bottom - top;
         boxWidth = right - left;
+
         //Changing the value of x in diameter/x will change the size of the box ; inversely proportionate to x
         canvas.drawRect(left, top, right, bottom, paint);
+
+        RectF rect = new RectF(left, top, right, bottom);
+        Path path = new Path();
+        path.addRect(rect, Path.Direction.CW);
+        path.setFillType(Path.FillType.INVERSE_EVEN_ODD);
+        canvas.clipPath(path);
+        canvas.drawARGB(125, 0, 0, 0);
+
         holder.unlockCanvasAndPost(canvas);
+    }
+    private Point getPointOfView(View view) {
+        int[] location = new int[2];
+        view.getLocationInWindow(location);
+        return new Point(location[0], location[1]);
     }
 
     /**
@@ -347,7 +391,10 @@ public class CustomActivity extends AppCompatActivity implements SurfaceHolder.C
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
-        DrawFocusRect(Color.parseColor("#ff0000"));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            DrawFocusRect(Color.parseColor("#ff0000"));
+
+        }
     }
 
     @Override

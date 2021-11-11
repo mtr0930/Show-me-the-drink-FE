@@ -1,12 +1,14 @@
 package com.example.Drinks_Classification;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
@@ -22,7 +24,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import okhttp3.MediaType;
@@ -78,6 +82,20 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), CustomActivity.class);
                 startActivityForResult(intent, SET_IMAGE_VIEW_CODE);
+            }
+        });
+        // predict 버튼 클릭시 동작.
+        predict.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+
+                if(photoURI!=null){
+                    uploadFile(photoURI);
+                    speak();
+                }else{
+                    Log.d("실패", "no images");
+                }
+
             }
         });
 
@@ -142,23 +160,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         );
 
         if (resultCode == RESULT_OK) {
-            if (requestCode == SELECT_PICTURE) {
-                imgView.setImageURI(data.getData());
-
-                Uri uri = data.getData();
-
-                if (null != uri){
-                    photoURI = uri;
-                    imgView.setImageURI(uri);
-                }
-
-            }
-
             if(requestCode == SET_IMAGE_VIEW_CODE){
                 Log.d("성공", "on activity result");
                 byte[] byteArray = (byte[]) data.getExtras().get("img");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
                 imgView.setImageBitmap(bitmap);
+                Uri uri = getImageUri(this, bitmap);
+                photoURI = uri;
+
             }
         }
     }
@@ -188,7 +197,13 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         TTS.speak(message, TextToSpeech.QUEUE_FLUSH, null, null);
 
     }
-
+    private Uri getImageUri(Context context, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
+        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), inImage, mDateFormat + "_img", null);
+        return Uri.parse(path);
+    }
 
 
     private void uploadFile(Uri fileUri){
