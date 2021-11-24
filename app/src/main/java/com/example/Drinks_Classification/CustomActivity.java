@@ -62,6 +62,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
@@ -215,6 +216,7 @@ public class CustomActivity extends AppCompatActivity implements SurfaceHolder.C
                                     rotationMatrix.postRotate(0);
                                     float x_scale = 1.0f;
                                     float y_scale = 1.0f;
+                                    float global_scale = 1.0f;
                                     if(imageWidth > cameraWidth){
                                         x_scale = (float) (imageWidth / cameraWidth);
                                     }
@@ -225,22 +227,28 @@ public class CustomActivity extends AppCompatActivity implements SurfaceHolder.C
 
 //                                    int scaled_width = (int) (2.0 * boxWidth);
 //                                    int scaled_height = (int) (2.0 * boxHeight);
+                                    // 원래 여기 boxWidth
                                     int scaled_width = (int) (x_scale * boxWidth);
                                     int scaled_height = (int) (y_scale * boxHeight);
                                     int x1 = (int) ((imageBitmap.getWidth() - scaled_width)/2) ;
                                     int y1 = (int)((imageBitmap.getHeight() - scaled_height)/2);
 //                                    int width = (int)(2.0 * boxWidth);
 //                                    int height = (int) (2.0 * boxHeight);
+                                    // 원래 여기 boxWidth
                                     int width = (int)(x_scale * boxWidth);
                                     int height = (int) (y_scale * boxHeight);
                                     Bitmap bitmap = Bitmap.createBitmap(imageBitmap, x1, y1, width, height, rotationMatrix, false);
+                                    Uri original_uri = getImageUri(getApplicationContext(), bitmap);
+
                                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-                                    Bitmap resize = Bitmap.createScaledBitmap(bitmap, 180, 360, true);
+                                    Bitmap resize = Bitmap.createScaledBitmap(bitmap, 100, 200, true);
+                                    //Bitmap resize = Bitmap.createScaledBitmap(bitmap, 180, 180, true);
                                     resize.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                                     byte[] byteArray = stream.toByteArray();
 
                                     intent.putExtra("img", byteArray);
+                                    intent.putExtra("uri", original_uri);
                                     setResult(RESULT_OK, intent);
                                     finish();
                                 }else{
@@ -401,7 +409,15 @@ public class CustomActivity extends AppCompatActivity implements SurfaceHolder.C
     public void surfaceDestroyed(SurfaceHolder holder) {
 
     }
-
+    private Uri getImageUri(Context context, Bitmap inImage) {
+        Date currentTime = Calendar.getInstance().getTime();
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.KOREA);
+        String time = mDateFormat.format(currentTime);
+        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), inImage, time + "_img", null);
+        return Uri.parse(path);
+    }
 
 
 

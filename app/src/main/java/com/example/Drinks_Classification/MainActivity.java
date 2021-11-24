@@ -27,6 +27,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import okhttp3.MediaType;
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     String filePath;
     File imageFile;
     Uri photoURI;
-    String BASE_URL = "http://192.168.123.110:5000/";
+    String BASE_URL = "http://3.145.13.210:5000/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
                 if(photoURI!=null){
                     uploadFile(photoURI);
-                    speak();
                 }else{
                     Log.d("실패", "no images");
                 }
@@ -163,10 +164,11 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             if(requestCode == SET_IMAGE_VIEW_CODE){
                 Log.d("성공", "on activity result");
                 byte[] byteArray = (byte[]) data.getExtras().get("img");
+                Uri server_img_uri = (Uri) data.getExtras().get("uri");
                 Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
                 imgView.setImageBitmap(bitmap);
                 Uri uri = getImageUri(this, bitmap);
-                photoURI = uri;
+                photoURI = server_img_uri;
 
             }
         }
@@ -183,7 +185,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
             else {
                 predict.setEnabled(true);
-                speak();
             }
         }
         else{
@@ -198,10 +199,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     }
     private Uri getImageUri(Context context, Bitmap inImage) {
+        Date currentTime = Calendar.getInstance().getTime();
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
-        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), inImage, mDateFormat + "_img", null);
+        SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.KOREA);
+        String time = mDateFormat.format(currentTime);
+        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), inImage, time + "_img", null);
         return Uri.parse(path);
     }
 
