@@ -11,7 +11,8 @@ Language : Java
 <img width="1391" alt="스크린샷 2023-06-12 오전 11 18 25" src="https://github.com/mtr0930/Drinks_Classification/assets/71540277/1df3e2a7-76f9-426a-9de3-26b95829c71a">
 
 
-### 2. UI
+### 3. UI
+
 
 ### 😎 에뮬레이터 실행 화면
 
