@@ -20,7 +20,7 @@
 
 
 ### 5. 데모 영상
-
+<https://youtu.be/OJpT2R3y27M>
   
 ### 6. 주요 기능들
 #### TensorFlow Lite 모델 적용
