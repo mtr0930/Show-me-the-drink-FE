@@ -85,17 +85,19 @@
         }
     ```
     
-#### Crop Box 이미지 변환 기능
+**Crop Box 이미지 변환 기능**
 
+- 촬영버튼 클릭 이벤트 리스너 Code
+    
     ```java
     btn_custom_camera.setOnClickListener(v -> {
-
+    
                 SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
-
+    
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "IMG_" + System.currentTimeMillis());
                 contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
-
+    
                 ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions
                         .Builder(getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
                         .build();
@@ -112,11 +114,11 @@
                                 Intent intent = new Intent(CustomActivity.this, MainActivity.class);
                                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
                                     ImageDecoder.Source source_image = ImageDecoder.createSource(getContentResolver(), outputImage);
-
+    
                                     Log.d("성공", "여기까지 진행");
                                     try {
                                         imageBitmap = ImageDecoder.decodeBitmap(source_image);
-
+    
                                     } catch (IOException e) {
                                         Log.d("실패", "여기는 에러");
                                         e.printStackTrace();
@@ -131,7 +133,7 @@
                                         // left 좌표 284, top 494
                                         int imageWidth = imageBitmap.getWidth();
                                         int imageHeight = imageBitmap.getHeight();
-
+    
                                         String image_path = getPathFromUri(outputImage);
                                         int image_degree = readPictureDegree(image_path);
                                         float Bitmap_size = imageBitmap.getWidth() * imageBitmap.getHeight();
@@ -143,11 +145,11 @@
                                         if(imageWidth > cameraWidth){
                                             x_scale = (float) (imageWidth / cameraWidth);
                                         }
-
+    
                                         if(imageHeight > cameraHeight){
                                             y_scale = (float) (imageHeight / cameraHeight);
                                         }
-
+    
     //                                    int scaled_width = (int) (2.0 * boxWidth);
     //                                    int scaled_height = (int) (2.0 * boxHeight);
                                         // 원래 여기 boxWidth
@@ -162,14 +164,14 @@
                                         int height = (int) (y_scale * boxHeight);
                                         Bitmap bitmap = Bitmap.createBitmap(imageBitmap, x1, y1, width, height, rotationMatrix, false);
                                         Uri original_uri = getImageUri(getApplicationContext(), bitmap);
-
+    
                                         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
+    
                                         Bitmap resize = Bitmap.createScaledBitmap(bitmap, 100, 200, true);
                                         //Bitmap resize = Bitmap.createScaledBitmap(bitmap, 180, 180, true);
                                         resize.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                                         byte[] byteArray = stream.toByteArray();
-
+    
                                         intent.putExtra("img", byteArray);
                                         intent.putExtra("uri", original_uri);
                                         setResult(RESULT_OK, intent);
@@ -177,13 +179,14 @@
                                     }else{
                                         Log.d("실패", "image null");
                                     }
-
+    
                                 }
-
+    
                             }
                         });
      }
     ```
+    
 #### `TTS`(Text to Speech) 기능
 
 > **음료수를 알려줘는 시각 장애가 있는 분들을 위한 기능들을 제공하고 있다. 
