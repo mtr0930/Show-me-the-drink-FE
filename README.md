@@ -3,12 +3,15 @@
 ### 1. Environment
 
  ```
-📌IDE : Android Studio (4.1.1)
+📌 IDE : Android Studio (4.1.1)
 Language : Java
 ```
 
+### 2. 주제 선정 이유
+<img width="1391" alt="스크린샷 2023-06-12 오전 11 18 25" src="https://github.com/mtr0930/Drinks_Classification/assets/71540277/1df3e2a7-76f9-426a-9de3-26b95829c71a">
 
-### 2. 현재까지 진행상황
+
+### 2. UI
 
 ### 😎 에뮬레이터 실행 화면
 
