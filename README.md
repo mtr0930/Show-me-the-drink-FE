@@ -3,8 +3,10 @@
 ### 1. Environment
 
 <aside>
-📌 **IDE : Android Studio (4.1.1)
-Language : Java**
+📌 **
+    IDE : Android Studio (4.1.1)
+    Language : Java
+    **
 
 </aside>
 
