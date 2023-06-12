@@ -85,49 +85,105 @@
         }
     ```
     
+#### Crop Box 이미지 변환 기능
+ ```btn_custom_camera.setOnClickListener(v -> {
 
-#### Firebase DB연동
+            SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
 
-> **여러가지 DB를 고려해봤지만 가장 중요하게 생각한 점은 `Android Studio`와 연동하는데 있어서 유연성이라고 중요하다고 생각했다. 따라서, DB의 데이터 삽입과 수정도 간편한 `Firebase Store DB`를 선택했다. DB에는 현재  `name`(음료수 이름), `type`(음료수 종류), `flavor`(음료수 맛)의 3가지 field가 있다. 앞으로 `caution`(주의사항) 등의 field를 추가할 계획이다.**
-> 
-- **Firebase DB 연동 자세한 구현 Code**
-    
-    ```java
-    // 모델의 출력결과로 나온 음료수 정보를 db를 조회해서 가져옴
-    // 현재는 db 테이블에 음료수정보 name(음료수 이름), flavor(맛)의 2개 필드값이 있음
-    private void searchDrink(String answer){
-            // firebase db를 DocumentReference 형식으로 동적으로 입력받은 answer에 해당하는 정보를 가져옴
-            DocumentReference drinksRef = db.collection("drinks").document(answer);
-            drinksRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "IMG_" + System.currentTimeMillis());
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
+
+            ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions
+                    .Builder(getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+                    .build();
+            imageCapture.takePicture(outputFileOptions, executor, new ImageCapture.OnImageSavedCallback () {
                 @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if(task.isSuccessful()){
-                        DocumentSnapshot doc = task.getResult();
-    										// db에 성공적으로 접근하고 예측한 정확도가 80%이상이면
-                        if(doc.exists() && max > 0.8){
-                            Log.d("Document", doc.getData().toString());
-                            Log.d("Document", doc.get("name").toString());
-                            String num = String.format("%.1f", max*100);
-    												// 화면에 아래와 같은 정보를 text로 출력한다.
-                            tv.setText("음료수 이름 : " + doc.get("name").toString() + "\n" +
-                                            "음료수 종류 : " + doc.get("type").toString() + "\n" +
-                                    "음료수 맛 : " + doc.get("flavor").toString() + "\n"
-                                    //+ "확률 : "+ num + "%"
-                            );
-    												// TTS 기능 실행
-                            speak();
-                        }else{
-                            tv.setText("다시 시도해주세요");
-    												// TTS 기능 실행
-                            speak();
-                            Log.d("Document", "No data");
+                public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(CustomActivity.this, "Image Saved successfully", Toast.LENGTH_SHORT).show();
+                            Uri outputImage = outputFileResults.getSavedUri();
+                            Bitmap imageBitmap = null;
+                            Bitmap cropped_bitmap;
+                            Intent intent = new Intent(CustomActivity.this, MainActivity.class);
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                                ImageDecoder.Source source_image = ImageDecoder.createSource(getContentResolver(), outputImage);
+
+                                Log.d("성공", "여기까지 진행");
+                                try {
+                                    imageBitmap = ImageDecoder.decodeBitmap(source_image);
+
+                                } catch (IOException e) {
+                                    Log.d("실패", "여기는 에러");
+                                    e.printStackTrace();
+                                }
+                                if(imageBitmap!=null){
+                                    // camera width 1080
+                                    // camera height 2015
+                                    // box width 512
+                                    // box height 1026
+                                    // image width 3024
+                                    // image height 4032
+                                    // left 좌표 284, top 494
+                                    int imageWidth = imageBitmap.getWidth();
+                                    int imageHeight = imageBitmap.getHeight();
+
+                                    String image_path = getPathFromUri(outputImage);
+                                    int image_degree = readPictureDegree(image_path);
+                                    float Bitmap_size = imageBitmap.getWidth() * imageBitmap.getHeight();
+                                    Matrix rotationMatrix = new Matrix();
+                                    rotationMatrix.postRotate(0);
+                                    float x_scale = 1.0f;
+                                    float y_scale = 1.0f;
+                                    float global_scale = 1.0f;
+                                    if(imageWidth > cameraWidth){
+                                        x_scale = (float) (imageWidth / cameraWidth);
+                                    }
+
+                                    if(imageHeight > cameraHeight){
+                                        y_scale = (float) (imageHeight / cameraHeight);
+                                    }
+
+//                                    int scaled_width = (int) (2.0 * boxWidth);
+//                                    int scaled_height = (int) (2.0 * boxHeight);
+                                    // 원래 여기 boxWidth
+                                    int scaled_width = (int) (x_scale * boxWidth);
+                                    int scaled_height = (int) (y_scale * boxHeight);
+                                    int x1 = (int) ((imageBitmap.getWidth() - scaled_width)/2) ;
+                                    int y1 = (int)((imageBitmap.getHeight() - scaled_height)/2);
+//                                    int width = (int)(2.0 * boxWidth);
+//                                    int height = (int) (2.0 * boxHeight);
+                                    // 원래 여기 boxWidth
+                                    int width = (int)(x_scale * boxWidth);
+                                    int height = (int) (y_scale * boxHeight);
+                                    Bitmap bitmap = Bitmap.createBitmap(imageBitmap, x1, y1, width, height, rotationMatrix, false);
+                                    Uri original_uri = getImageUri(getApplicationContext(), bitmap);
+
+                                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+                                    Bitmap resize = Bitmap.createScaledBitmap(bitmap, 100, 200, true);
+                                    //Bitmap resize = Bitmap.createScaledBitmap(bitmap, 180, 180, true);
+                                    resize.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                                    byte[] byteArray = stream.toByteArray();
+
+                                    intent.putExtra("img", byteArray);
+                                    intent.putExtra("uri", original_uri);
+                                    setResult(RESULT_OK, intent);
+                                    finish();
+                                }else{
+                                    Log.d("실패", "image null");
+                                }
+
+
+                            }
+
+
                         }
-                    }
+                    });
                 }
-            });
-    }
-    ```
-    
+ ```
 
 #### `TTS`(Text to Speech) 기능
 
