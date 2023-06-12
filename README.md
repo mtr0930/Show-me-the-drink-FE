@@ -2,13 +2,11 @@
 
 ### 1. Environment
 
-<aside>
-📌 ```
-    IDE : Android Studio (4.1.1)
-    Language : Java
-    ```
+ ```
+📌IDE : Android Studio (4.1.1)
+Language : Java
+```
 
-</aside>
 
 ### 2. 현재까지 진행상황
 
