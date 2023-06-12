@@ -86,8 +86,11 @@
     ```
     
 **Crop Box 이미지 변환 기능**
-
-- 촬영버튼 클릭 이벤트 리스너 Code
+> ** 카메라의 레이아웃과 화면의 레이아웃 간의 차이가 있어서 
+이를 변환하기 위해서 width와 height간의 비율을 적용시켜서
+캡쳐된 이미지가 깨지는 현상을 해결했다 **
+>
+- **촬영버튼 클릭 이벤트 리스너 Code**
     
     ```java
     btn_custom_camera.setOnClickListener(v -> {
