@@ -86,7 +86,9 @@
     ```
     
 #### Crop Box 이미지 변환 기능
- ```btn_custom_camera.setOnClickListener(v -> {
+
+```java
+btn_custom_camera.setOnClickListener(v -> {
 
             SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
 
@@ -176,15 +178,12 @@
                                     Log.d("실패", "image null");
                                 }
 
-
                             }
-
 
                         }
                     });
-                }
- ```
-
+ }
+```
 #### `TTS`(Text to Speech) 기능
 
 > **음료수를 알려줘는 시각 장애가 있는 분들을 위한 기능들을 제공하고 있다. 
