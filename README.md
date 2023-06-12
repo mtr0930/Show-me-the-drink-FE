@@ -14,7 +14,7 @@ Language : Java**
 
 - **실행 화면 이미지 (3가지 종류의 버튼)**
     
-    ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/36d78cd9-e234-4692-9caa-fbed8c283c86/Untitled.png)
+    ![Untitled](https://github.com/mtr0930/Drinks_Classification/assets/71540277/3abfd056-3ad2-44a3-8fa0-4b264751d0f6)
     
 - **CAMERA 버튼 실행 이미지 (카메라 실행)**
     
