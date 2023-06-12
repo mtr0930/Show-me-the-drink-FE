@@ -87,7 +87,7 @@
     
 **Crop Box 이미지 변환 기능**
 > **카메라의 레이아웃과 화면의 레이아웃 간의 차이가 있어서 
-이를 변환하기 위해서 width와 height간의 비율을 적용시켰고  
+이를 변환하기 위해서 `width`와 `height`간의 비율을 적용시켰고  
 캡쳐된 이미지가 깨지는 현상을 해결했다.**
 > 
 
@@ -146,24 +146,22 @@
                                         float x_scale = 1.0f;
                                         float y_scale = 1.0f;
                                         float global_scale = 1.0f;
+                                        
+                                        // width  비율 계산
                                         if(imageWidth > cameraWidth){
                                             x_scale = (float) (imageWidth / cameraWidth);
                                         }
-    
+                                        
+                                        // height 비율 계산
                                         if(imageHeight > cameraHeight){
                                             y_scale = (float) (imageHeight / cameraHeight);
                                         }
     
-    //                                    int scaled_width = (int) (2.0 * boxWidth);
-    //                                    int scaled_height = (int) (2.0 * boxHeight);
-                                        // 원래 여기 boxWidth
                                         int scaled_width = (int) (x_scale * boxWidth);
                                         int scaled_height = (int) (y_scale * boxHeight);
                                         int x1 = (int) ((imageBitmap.getWidth() - scaled_width)/2) ;
                                         int y1 = (int)((imageBitmap.getHeight() - scaled_height)/2);
-    //                                    int width = (int)(2.0 * boxWidth);
-    //                                    int height = (int) (2.0 * boxHeight);
-                                        // 원래 여기 boxWidth
+
                                         int width = (int)(x_scale * boxWidth);
                                         int height = (int) (y_scale * boxHeight);
                                         Bitmap bitmap = Bitmap.createBitmap(imageBitmap, x1, y1, width, height, rotationMatrix, false);
@@ -172,7 +170,7 @@
                                         ByteArrayOutputStream stream = new ByteArrayOutputStream();
     
                                         Bitmap resize = Bitmap.createScaledBitmap(bitmap, 100, 200, true);
-                                        //Bitmap resize = Bitmap.createScaledBitmap(bitmap, 180, 180, true);
+                                        
                                         resize.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                                         byte[] byteArray = stream.toByteArray();
     
