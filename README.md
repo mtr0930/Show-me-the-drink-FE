@@ -8,10 +8,12 @@
 ----
 
 
+
 ### 2. 주제 선정 이유
 <img width="1391" alt="스크린샷 2023-06-12 오전 11 18 25" src="https://github.com/mtr0930/Drinks_Classification/assets/71540277/1df3e2a7-76f9-426a-9de3-26b95829c71a">
 
 ----
+
 
 
 ### 3. UI
@@ -20,16 +22,19 @@
 ----
 
 
+
 ### 4. 아키텍쳐
 <img width="1386" alt="스크린샷 2023-06-12 오후 2 18 15" src="https://github.com/mtr0930/Drinks_Classification/assets/71540277/c3d63262-b1d4-4ab3-b12f-1d063e0601b9">
 
 ----
 
 
+
 ### 5. 데모 영상
 <https://youtu.be/OJpT2R3y27M>
 
 ----
+
 
 
 ### 6. 주요 기능들
